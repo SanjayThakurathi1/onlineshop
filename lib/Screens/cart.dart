@@ -4,6 +4,7 @@ import 'package:online_shopping/Models/database.dart';
 import 'package:online_shopping/Screens/listdescription.dart';
 import 'package:online_shopping/Screens/providerlistner.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 import 'const.dart';
 
@@ -21,24 +22,27 @@ class Cart extends StatefulWidget {
 }
 
 class _CartState extends State<Cart> {
-  String name, price, img, model, capacity, color;
+  String date = DateFormat.yMEd().add_jms().format(DateTime.now());
+
+  String name, price, img, capacity, color;
 
   final db = DatabaseHelper.instance;
   void queryall() async {
     var allqueries = await db.queryall();
-    /* allqueries.forEach((allqueries) {
+    allqueries.forEach((allqueries) {
       name = allqueries['name'];
       price = allqueries['price'];
+
       img = allqueries['photo'];
       capacity = allqueries['capacity'];
-      model = allqueries['model'];
+      date = allqueries['model'];
       color = allqueries['color'];
-      
     });
-    */
-    // final id = allqueries;
 
-    // print(id);
+    final id = allqueries;
+    print(allqueries);
+
+    print(id);
   }
 
   int x = 1;
@@ -54,30 +58,28 @@ class _CartState extends State<Cart> {
     return colour;
   }
 
-  void insert() async {
+  Future<int> insert() async {
     Map<String, dynamic> row = {
       DatabaseHelper.coloumnname: widget.name,
       DatabaseHelper.coloumnprice: widget.price,
       DatabaseHelper.coloumphoto: widget.img,
-      DatabaseHelper.coloummodel: widget.model,
+      DatabaseHelper.coloummodel: date,
       DatabaseHelper.coloumncapacity: widget.capicity,
       DatabaseHelper.coloumncolor: widget.color,
     };
 
     final id = await db.insert(row);
+
     Provider.of<Providerlist>(context, listen: false).savedCart.add(
         ListDescription(
             capacity: widget.capicity,
             color: widget.color,
             img: widget.img,
-            model: widget.model,
+            date: widget.model,
             name: widget.name,
             price: widget.price));
-    print(id);
-  }
 
-  void deleteall() async {
-    db.deletedata();
+    return id;
   }
 
   @override
@@ -100,7 +102,7 @@ class _CartState extends State<Cart> {
         children: <Widget>[
           Container(
             color: Colors.green,
-            height: 430,
+            height: 440,
             width: 400,
             child: Card(
               child: Column(
@@ -207,36 +209,34 @@ class _CartState extends State<Cart> {
                             SizedBox(
                               width: 35,
                             ),
-                            RaisedButton(
+                            FloatingActionButton(
+                                tooltip: "Save to Cart",
+                                splashColor: Colors.lightBlue,
+                                heroTag: null,
+                                backgroundColor: Colors.deepOrangeAccent,
                                 child: Text("save"),
                                 onPressed: () {
-                                  insert();
+                                  showDialog(
+                                      barrierDismissible: true,
+                                      builder: (context) => AlertDialog(
+                                            backgroundColor: Colors.amber,
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.horizontal()),
+                                            actions: [
+                                              Text(
+                                                "Saved to Cart",
+                                                style: kTextstylegreen,
+                                              ),
+                                              SizedBox(
+                                                width: 86,
+                                              ),
+                                            ],
+                                          ),
+                                      context: (context));
 
-                                  //deleteall();
-                                  // Provider.of<Providerlist>(context)
-                                  //    .deletedata();
-                                  /* Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => Cartsave(
-                                                color: color,
-                                                capicity: capacity,
-                                                img: img,
-                                                model: model,
-                                                name: name,
-                                                price: price,
-                                              )));
-                                              */
+                                  insert();
                                 }),
-                            RaisedButton(
-                              onPressed: () {
-                                // queryall();
-                                Provider.of<Providerlist>(context,
-                                        listen: false)
-                                    .listdata();
-                              },
-                              child: Text("saveto list"),
-                            ),
                             SizedBox(
                               width: 25,
                             ),

@@ -8,7 +8,7 @@ import 'package:online_shopping/Models/Tabbarviewscreen/hometab.dart';
 import 'package:online_shopping/Models/Tabbarviewscreen/shoppingcardtab.dart';
 //import 'package:online_shopping/Models/cartsave.dart';
 import 'package:online_shopping/Models/listviewfilter.dart';
-import 'package:online_shopping/Screens/drawer.dart';
+import 'package:online_shopping/Models/navigatorrail.dart';
 
 import 'const.dart';
 import 'listviewscreen.dart';
@@ -39,10 +39,17 @@ class _HomeScreenState extends State<HomeScreen> {
         length: 4,
         child: Scaffold(
             backgroundColor: Colors.white,
-            drawer: Drawer(
-              child: Drawerr(),
+            drawer: Padding(
+              padding: const EdgeInsets.only(top: 29),
+              child: Container(
+                width: 60,
+                child: Drawer(
+                  child: Navigatorrail(),
+                ),
+              ),
             ),
             appBar: AppBar(
+              automaticallyImplyLeading: true,
               backgroundColor: Colors.green,
               actions: [
                 /* Padding(
@@ -82,25 +89,40 @@ class _HomeScreenState extends State<HomeScreen> {
                     onPressed: () {
                       showSearch(context: context, delegate: Productsearch());
                     }),
-                IconButton(
-                    icon: Icon(
-                      Icons.add_alert,
-                      size: 35,
-                      color: Colors.black,
-                    ),
-                    onPressed: () {
-                      showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15)),
-                                backgroundColor: Colors.amber,
-                                content: Text(
-                                  "No Notification ",
-                                  style: ktextstylrblack,
-                                ),
-                              ));
-                    }),
+                Builder(
+                  builder: (context) => IconButton(
+                      icon: Icon(
+                        Icons.add_alert,
+                        size: 35,
+                        color: Colors.black,
+                      ),
+                      onPressed: () {
+                        Scaffold.of(context).showSnackBar(SnackBar(
+                          behavior: SnackBarBehavior.fixed,
+                          backgroundColor: Colors.black,
+                          duration: Duration(seconds: 2),
+                          content: Text(
+                            "No Notification",
+                            style: ktextstylrblack.copyWith(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.green),
+                          ),
+                        ));
+                        /* showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15)),
+                                  backgroundColor: Colors.amber,
+                                  content: Text(
+                                    "No Notification ",
+                                    style: ktextstylrblack,
+                                  ),
+                                ));
+                                */
+                      }),
+                ),
               ],
               title: Text("Online Shopping"),
               centerTitle: true,
@@ -116,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Tab(
-                  child: Icon(Icons.attach_money),
+                  child: Icon(FontAwesomeIcons.solidHeart),
                 ),
                 Tab(
                   child: Icon(Icons.account_circle),

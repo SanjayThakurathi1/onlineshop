@@ -43,7 +43,7 @@ class DatabaseHelper {
                 $coloumnId INTEGER PRIMARY KEY,
                 $coloumnname TEXT NOT NULL,
                 $coloumnprice Text NOT NULL,
-                $coloummodel  TEXT NOT NULL,
+                $coloummodel  TEXT,
                 $coloumphoto  TEXT NOT NULL,
                 $coloumncapacity  TEXT NOT NULL,
                 $coloumncolor  TEXT NOT NULL
@@ -52,9 +52,11 @@ class DatabaseHelper {
   }
 
   //function to insert a data iin database
-  Future<int> insert(Map<String, dynamic> row) async {
+  Future<int> insert(
+    Map<String, dynamic> row,
+  ) async {
     Database db = await instance.database;
-    return db.insert(table, row);
+    return db.insert(table, row, conflictAlgorithm: ConflictAlgorithm.replace);
   } //row is a local variable
 
   Future<List<Map<String, dynamic>>> queryall() async {
@@ -69,11 +71,38 @@ class DatabaseHelper {
     return res;
   }
 
-  Future deletedata() async {
+  Future deletedata(int id) async {
+    Database db = await instance.database;
+    int res = await db.delete(table, where: "id =?", whereArgs: [id]);
+    //db.delete(table);
+    return res;
+  }
+
+  Future deletealldatabase() async {
     Database db = await instance.database;
     //int res = await db.delete(table, where: "id =?", whereArgs: [id]);
-    db.delete(table);
-    //return res;
+    int res = await db.delete(table);
+    return res;
+  }
+
+  /*Future<int> tableIsEmpty() async {
+    Database db = await instance.database;
+    db = await openDatabase('Person.db');
+    /*await db.execute(
+         'CREATE TABLE Test (id INTEGER PRIMARY KEY, name TEXT, value INTEGER, num REAL)');*/
+
+    int count =
+        Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM table'));
+    print(count);
+    return count;
+  }
+  */
+  Future<int> getnumofobjectfromdatabase() async {
+    Database db = await this.database;
+    List<Map<String, dynamic>> x = await db.query(table);
+    int res = Sqflite.firstIntValue(x);
+
+    return res;
   }
 
   Future<int> update(int id) async {
